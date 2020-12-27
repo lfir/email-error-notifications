@@ -1,5 +1,6 @@
 import logging
 import os
+from pathlib import PurePath
 from urllib import request
 from urllib.error import HTTPError
 
@@ -7,13 +8,12 @@ from dotenv import load_dotenv
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import From, Mail, PlainTextContent, Subject, To
 
+load_dotenv('./.env')
 logging.basicConfig(
-    filename='mail_error_notifs.log',
+    filename=PurePath(os.getenv('LOGDIR')) / 'mail_error_notifs.log',
     level=logging.ERROR,
     format='%(asctime)s|%(levelname)s|%(message)s'
 )
-project_folder = os.path.expanduser('~/Devel/python/email-error-notifications')
-load_dotenv(os.path.join(project_folder, '.env'))
 
 def send_email(subject, mailbody):
     try:
@@ -25,9 +25,8 @@ def send_email(subject, mailbody):
         mail = Mail(from_email, to_emails, subject, content)
         
         response = sg.send(mail)
-        print('Response status code:', response.status_code)
-        print('Response body:', response.body)
-        #print(response.headers)
+        print('SendGrid response status code:', response.status_code)
+        print('SendGrid response body:', response.body)
     except Exception as e:
         logging.error(e)
 
