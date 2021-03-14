@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import From, Mail, PlainTextContent, Subject, To
 
-load_dotenv('./.env')
+load_dotenv('../.env')
 logging.basicConfig(
     filename=PurePath(os.getenv('LOGDIR')) / 'mail_error_notifs.log',
     level=logging.ERROR,
