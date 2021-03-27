@@ -8,12 +8,6 @@ from dotenv import load_dotenv
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import From, Mail, PlainTextContent, Subject, To
 
-load_dotenv('./.env')
-logging.basicConfig(
-    filename=PurePath(os.getenv('LOGDIR')) / 'mail_error_notifs.log',
-    level=logging.ERROR,
-    format='%(asctime)s|%(levelname)s|%(message)s'
-)
 
 def send_email(subject, mailbody):
     try:
@@ -30,18 +24,25 @@ def send_email(subject, mailbody):
     except Exception as e:
         logging.error(e)
 
-errors = set()
-msg = 'URL: {}.\nStatus code: {}.\nMessage: {}.'
-req0 = request.Request(os.getenv('HV1'))
-headers = {os.getenv('H1'): req0.full_url}
-req1 = request.Request(url=os.getenv('URL1'), headers=headers)
+if __name__ == '__main__':
+    load_dotenv('./.env')
+    logging.basicConfig(
+        filename=PurePath(os.getenv('LOGDIR')) / 'mail_error_notifs.log',
+        level=logging.ERROR,
+        format='%(asctime)s|%(levelname)s|%(message)s'
+    )
+    errors = set()
+    msg = 'URL: {}.\nStatus code: {}.\nMessage: {}.'
+    req0 = request.Request(os.getenv('HV1'))
+    headers = {os.getenv('H1'): req0.full_url}
+    req1 = request.Request(url=os.getenv('URL1'), headers=headers)
 
-for req in [req0, req1]:
-    try:
-        request.urlopen(req)
-    except HTTPError as e:
-        logging.error(e.geturl() + ': ' + str(e))
-        errors.add(msg.format(req.full_url, e.code, e.read()))
+    for req in [req0, req1]:
+        try:
+            request.urlopen(req)
+        except HTTPError as e:
+            logging.error(e.geturl() + ': ' + str(e))
+            errors.add(msg.format(req.full_url, e.code, e.read()))
 
-if len(errors) > 0:
-    send_email('Notification of site errors', '\n\n'.join(errors))
+    if len(errors) > 0:
+        send_email('Notification of site errors', '\n\n'.join(errors))
