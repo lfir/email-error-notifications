@@ -1,6 +1,7 @@
 import io
 import os
 import unittest
+from os import remove
 from unittest.mock import Mock, patch
 
 from dotenv import load_dotenv
@@ -8,8 +9,14 @@ from mail_error_notifs.mail_error_notifs import SendGridAPIClient, send_email
 
 
 class TestScripts(unittest.TestCase):
+    testenvpath = "./tests/.testenv"
+
     def test_when_env_file_present_environment_variables_can_be_read(self):
-        load_dotenv("./.env")
+        with open(TestScripts.testenvpath, "w") as fh:
+            fh.write("LOGDIR=/root")
+
+        load_dotenv(TestScripts.testenvpath)
+
         self.assertIsNotNone(os.getenv("LOGDIR"))
 
     @patch("sys.stdout", new_callable=io.StringIO)
@@ -33,3 +40,7 @@ class TestScripts(unittest.TestCase):
             send_email("TestCase subject", "TestCase body")
 
             self.assertIn(err_msg, " ".join(cm.output))
+
+    @classmethod
+    def tearDownClass(cls):
+        remove(TestScripts.testenvpath)
