@@ -1,4 +1,4 @@
-### mail_error_notifs.py
+## Email error notifications
 [![](https://github.com/Asta1986/email-error-notifications/actions/workflows/ci.yml/badge.svg)](https://github.com/Asta1986/email-error-notifications/actions/workflows/ci.yml)
 
 Script that can be used as a scheduled task to send email notifications when certain websites aren't available.
