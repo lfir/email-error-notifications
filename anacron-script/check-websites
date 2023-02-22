@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cd /home/sdf1/email-error-notifications || return
+su sdf1 -c '.venv/bin/python mail_error_notifs/mail_error_notifs.py'
+
