@@ -1,7 +1,7 @@
 import logging
 import os
 from pathlib import PurePath
-from urllib import request
+from urllib.request import Request, urlopen
 from urllib.error import HTTPError
 
 from dotenv import load_dotenv
@@ -41,13 +41,12 @@ if __name__ == "__main__":
     )
     errors = set()
     msg = "URL: {}.\nStatus code: {}.\nMessage: {}."
-    req0 = request.Request(os.getenv("HV1"))
-    headers = {os.getenv("H1"): req0.full_url}
-    req1 = request.Request(url=os.getenv("URL1"), headers=headers)
+    req0 = Request(os.getenv("URL0"))
+    req1 = Request(os.getenv("URL1"))
 
     for req in [req0, req1]:
         try:
-            request.urlopen(req)
+            urlopen(req)
         except HTTPError as e:
             logging.error(e.geturl() + ": " + str(e))
             errors.add(msg.format(req.full_url, e.code, e.read()))
